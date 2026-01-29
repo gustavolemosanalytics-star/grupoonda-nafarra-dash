@@ -24,10 +24,9 @@ export default function FinancePage() {
     const filteredData = useMemo(() => {
         return financeData.filter(item => {
             const matchData = !filters.data || item.dataEvento === filters.data;
-            const matchEvento = !filters.evento || item.evento === filters.evento;
             const matchCidade = !filters.cidade || item.cidade === filters.cidade;
             const matchEstado = !filters.estado || item.estado === filters.estado;
-            return matchData && matchEvento && matchCidade && matchEstado;
+            return matchData && matchCidade && matchEstado;
         });
     }, [financeData, filters]);
 

@@ -9,14 +9,12 @@ interface DataContextType {
     loading: boolean;
     filters: {
         data: string;
-        evento: string;
         cidade: string;
         estado: string;
     };
     setFilters: React.Dispatch<React.SetStateAction<DataContextType['filters']>>;
     availableFilters: {
         datas: string[];
-        eventos: string[];
         cidades: string[];
         estados: string[];
     };
@@ -30,14 +28,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({
         data: '',
-        evento: '',
         cidade: '',
         estado: '',
     });
 
     const [availableFilters, setAvailableFilters] = useState({
         datas: [] as string[],
-        eventos: [] as string[],
         cidades: [] as string[],
         estados: [] as string[],
     });
@@ -52,11 +48,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
                 // Extract available filters from Zig data (common to both)
                 const datas = Array.from(new Set(data.zig.map((d: ZigData) => d.dataEvento))).filter(Boolean) as string[];
-                const eventos = Array.from(new Set(data.zig.map((d: ZigData) => d.evento))).filter(Boolean) as string[];
                 const cidades = Array.from(new Set(data.zig.map((d: ZigData) => d.cidade))).filter(Boolean) as string[];
                 const estados = Array.from(new Set(data.zig.map((d: ZigData) => d.estado))).filter(Boolean) as string[];
 
-                setAvailableFilters({ datas, eventos, cidades, estados });
+                setAvailableFilters({ datas, cidades, estados });
                 setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch data', error);

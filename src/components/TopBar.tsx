@@ -20,13 +20,6 @@ export default function TopBar() {
                 </div>
                 <div className="flex gap-4">
                     <FilterSelect
-                        label="EVENTO"
-                        value={filters.evento}
-                        options={availableFilters.eventos}
-                        onChange={(v) => handleFilterChange('evento', v)}
-                        color="border-[#FF4D00]"
-                    />
-                    <FilterSelect
                         label="CIDADE"
                         value={filters.cidade}
                         options={availableFilters.cidades}

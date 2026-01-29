@@ -15,13 +15,31 @@ const BRAND_COLORS = ['#FF4D00', '#CCFF00', '#007AFF', '#FFFFFF', '#333333'];
 export default function ReportsPage() {
     const { zigData, financeData, loading, filters } = useData();
 
+    const filteredZig = useMemo(() => {
+        return zigData.filter(item => {
+            const matchData = !filters.data || item.dataEvento === filters.data;
+            const matchCidade = !filters.cidade || item.cidade === filters.cidade;
+            const matchEstado = !filters.estado || item.estado === filters.estado;
+            return matchData && matchCidade && matchEstado;
+        });
+    }, [zigData, filters]);
+
+    const filteredFinance = useMemo(() => {
+        return financeData.filter(item => {
+            const matchData = !filters.data || item.dataEvento === filters.data;
+            const matchCidade = !filters.cidade || item.cidade === filters.cidade;
+            const matchEstado = !filters.estado || item.estado === filters.estado;
+            return matchData && matchCidade && matchEstado;
+        });
+    }, [financeData, filters]);
+
     const analytics = useMemo(() => {
         if (loading) return null;
 
         // 1. Efficiency: Profit vs Courtesy % by Location
-        const locations = Array.from(new Set(financeData.map(d => `${d.cidade} - ${d.estado}`)));
+        const locations = Array.from(new Set(filteredFinance.map(d => `${d.cidade} - ${d.estado}`)));
         const efficiencyData = locations.map(loc => {
-            const locData = financeData.filter(d => `${d.cidade} - ${d.estado}` === loc);
+            const locData = filteredFinance.filter(d => `${d.cidade} - ${d.estado}` === loc);
             const rev = locData.filter(d => d.tipo === 'RECEITA').reduce((acc, d) => acc + d.valor, 0);
             const cst = locData.filter(d => d.tipo === 'CUSTO').reduce((acc, d) => acc + d.valor, 0);
             const profit = rev - cst;
@@ -32,7 +50,7 @@ export default function ReportsPage() {
         });
 
         // 2. Ticket Médio by Category (Zig)
-        const itemsByCat = zigData.reduce((acc: any, d) => {
+        const itemsByCat = filteredZig.reduce((acc: any, d) => {
             if (!acc[d.categoria]) acc[d.categoria] = { totalRev: 0, totalQty: 0 };
             acc[d.categoria].totalRev += d.valorTotal;
             acc[d.categoria].totalQty += d.quantidade;
@@ -46,7 +64,7 @@ export default function ReportsPage() {
 
         // 3. Correlation: Volume vs Revenue (Zig) by Location
         const correlationData = locations.map(loc => {
-            const locZig = zigData.filter(d => `${d.cidade} - ${d.estado}` === loc);
+            const locZig = filteredZig.filter(d => `${d.cidade} - ${d.estado}` === loc);
             return {
                 name: loc,
                 "Quantidade": locZig.reduce((acc, d) => acc + d.quantidade, 0),
@@ -55,7 +73,7 @@ export default function ReportsPage() {
         }).filter(d => d["Quantidade"] > 0 || d["Receita R$"] > 0);
 
         return { efficiencyData, ticketByCat, correlationData };
-    }, [zigData, financeData, loading]);
+    }, [filteredZig, filteredFinance, loading]);
 
     if (loading) return null;
     if (!analytics) return null;

@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #000000;
+  --foreground: #ffffff;
+  --primary: #FF4D00;
+  /* Vibrant Orange */
+  --secondary: #CCFF00;
+  /* Lime / Volt */
+  --accent: #007AFF;
+  /* Electric Blue */
+  --sidebar-width: 280px;
+  --header-height: 80px;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Halftone Pattern Background */
+.halftone-bg {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+.halftone-orange {
+  background-image: radial-gradient(circle, var(--primary) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* Urban Card Style */
+.urban-card {
+  background: #111;
+  border: 4px solid #fff;
+  box-shadow: 8px 8px 0px #000;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.urban-card:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 12px 12px 0px var(--primary);
+  border-color: var(--secondary);
+}
+
+/* Popup-art shadow text */
+.pop-shadow {
+  text-shadow: 3px 3px 0px var(--primary);
+}
+
+.pop-shadow-white {
+  text-shadow: 3px 3px 0px #fff;
+}
+
+/* Volt shadow button/element */
+.volt-border {
+  border: 2px solid var(--secondary);
+  box-shadow: 4px 4px 0px var(--secondary);
+}
+
+.primary-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, #FF6B00 100%);
+}
+
+.text-volt {
+  color: var(--secondary);
+}
+
+.text-orange {
+  color: var(--primary);
+}
+
+.text-blue {
+  color: var(--accent);
+}
+
+/* Custom Scrollbar Urban Style */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border: 2px solid #000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
 }

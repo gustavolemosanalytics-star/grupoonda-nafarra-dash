@@ -59,8 +59,8 @@ export default function ReportsPage() {
 
         const ticketByCat = Object.entries(itemsByCat).map(([name, data]: any) => ({
             name,
-            avgTicket: data.totalQty > 0 ? data.totalRev / data.totalQty : 0
-        })).sort((a, b) => b.avgTicket - a.avgTicket);
+            "Ticket Médio R$": data.totalQty > 0 ? data.totalRev / data.totalQty : 0
+        })).sort((a, b) => b["Ticket Médio R$"] - a["Ticket Médio R$"]).slice(0, 10);
 
         // 3. Correlation: Volume vs Revenue (Zig) by Location
         const correlationData = locations.map(loc => {
@@ -127,14 +127,18 @@ export default function ReportsPage() {
                         <h3 className="text-xl font-black italic text-white uppercase">TICKET MÉDIO POR CATEGORIA</h3>
                     </div>
                     <p className="text-xs text-white/40 mb-8 font-black uppercase tracking-widest italic">Onde o público gasta mais? Ticket médio calculado por tipo de categoria de venda.</p>
-                    <div className="h-[300px]">
+                    <div className="h-[500px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={analytics.ticketByCat} layout="vertical">
+                            <BarChart data={analytics.ticketByCat} layout="vertical" margin={{ left: 20, right: 80 }}>
                                 <XAxis type="number" hide />
-                                <YAxis dataKey="name" type="category" stroke="#fff" fontSize={10} fontWeight="900" width={100} axisLine={false} tickLine={false} />
-                                <Tooltip contentStyle={{ backgroundColor: '#000', border: '2px solid #fff' }} itemStyle={{ color: '#fff' }} />
-                                <Bar dataKey="avgTicket" fill="#CCFF00" radius={[0, 0, 0, 0]} barSize={20}>
-                                    <LabelList dataKey="avgTicket" position="right" fill="#fff" fontSize={10} fontWeight="900" formatter={(val: any) => `R$ ${Number(val).toFixed(2)}`} />
+                                <YAxis dataKey="name" type="category" stroke="#fff" fontSize={10} fontWeight="900" width={140} axisLine={false} tickLine={false} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#000', border: '2px solid #fff' }}
+                                    itemStyle={{ color: '#fff' }}
+                                    formatter={(val: any) => `R$ ${Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
+                                />
+                                <Bar dataKey="Ticket Médio R$" fill="#CCFF00" radius={[0, 0, 0, 0]} barSize={25}>
+                                    <LabelList dataKey="Ticket Médio R$" position="right" fill="#fff" fontSize={11} fontWeight="900" formatter={(val: any) => `R$ ${Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} />
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>

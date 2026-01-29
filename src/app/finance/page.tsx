@@ -185,7 +185,11 @@ export default function FinancePage() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart
                                     data={costsByCategory}
-                                    onClick={(data) => data && setSelectedCostCategory(data.activeLabel)}
+                                    onClick={(data) => {
+                                        if (data && data.activeLabel) {
+                                            setSelectedCostCategory(String(data.activeLabel));
+                                        }
+                                    }}
                                 >
                                     <XAxis dataKey="name" stroke="#fff" fontSize={10} fontWeight="900" axisLine={false} tickLine={false} />
                                     <Tooltip

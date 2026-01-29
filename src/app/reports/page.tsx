@@ -132,7 +132,7 @@ export default function ReportsPage() {
                 <div className="flex items-center justify-between mb-8 border-b-4 border-black pb-4">
                     <div>
                         <h3 className="text-3xl font-black italic text-white uppercase drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]">RELAÇÃO VOLUME X RECEITA</h3>
-                        <p className="text-sm font-bold text-black/60 uppercase">Consistência de performance entre diferentes praças e datas.</p>
+                        <p className="text-sm font-bold text-white/70 uppercase">Consistência de performance entre diferentes praças e datas.</p>
                     </div>
                     <TrendingUp className="w-10 h-10 text-black" />
                 </div>
@@ -148,7 +148,7 @@ export default function ReportsPage() {
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                             <XAxis dataKey="name" stroke="#fff" fontSize={10} fontWeight="900" axisLine={false} tickLine={false} />
                             <YAxis yAxisId="left" stroke="#fff" fontSize={10} fontWeight="900" axisLine={false} tickLine={false} orientation="left" />
-                            <YAxis yAxisId="right" stroke="#000" fontSize={10} fontWeight="900" axisLine={false} tickLine={false} orientation="right" />
+                            <YAxis yAxisId="right" stroke="#fff" fontSize={10} fontWeight="900" axisLine={false} tickLine={false} orientation="right" />
                             <Tooltip
                                 contentStyle={{ backgroundColor: '#000', border: '2px solid #fff' }}
                                 itemStyle={{ color: '#fff' }}
@@ -158,7 +158,7 @@ export default function ReportsPage() {
                                 ]}
                             />
                             <Legend verticalAlign="top" height={36} />
-                            <Bar yAxisId="right" dataKey="Quantidade" fill="#000" barSize={40} opacity={0.4} name="Vol. de Vendas" />
+                            <Bar yAxisId="right" dataKey="Quantidade" fill="#fff" barSize={40} opacity={0.6} name="Vol. de Vendas" />
                             <Area yAxisId="left" type="monotone" dataKey="Receita R$" stroke="#fff" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" name="Faturamento R$" />
                         </ComposedChart>
                     </ResponsiveContainer>
@@ -167,7 +167,13 @@ export default function ReportsPage() {
                     <div className="flex-1 bg-black p-6 border-2 border-white">
                         <p className="text-xs text-[#CCFF00] font-black uppercase mb-1">O que este gráfico mostra?</p>
                         <p className="text-sm text-white font-bold leading-relaxed">
-                            Este gráfico cruza o **Volume de Vendas (Barras)** com o **Faturamento (Linha)**. Ele serve para identificar em quais praças o público gasta mais por transação. Se a linha de Receita sobe mais rápido que as barras, o Ticket Médio naquela praça é superior.
+                            Este gráfico cruza o **Volume de Vendas (Barras Brancas)** com o **Faturamento (Linha Branca)**.
+                            <br /><br />
+                            📌 **Vol. de Vendas:** Representa a quantidade total de itens saindo do bar (tickets gerados). É o volume operacional puro.
+                            <br />
+                            📌 **Faturamento R$:** É o dinheiro real entrando no caixa.
+                            <br /><br />
+                            Se a linha sobe mais que as barras, significa que o **Ticket Médio** naquela praça é superior (o público está consumindo itens de maior valor).
                         </p>
                     </div>
                     <div className="hidden md:block w-48 text-white font-black italic text-xl tracking-tighter leading-none pt-4 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">

@@ -75,6 +75,10 @@ async function getRowsFromSheet(gid: string) {
         const sheet = doc.sheetsById[gid];
         if (!sheet) throw new Error(`Sheet with GID ${gid} not found`);
         const rows = await sheet.getRows();
+        console.log(`Fetched ${rows.length} rows for GID ${gid}`);
+        if (rows.length > 0) {
+            console.log('Sample row keys:', Object.keys(rows[0].toObject()));
+        }
         return rows.map(row => row.toObject());
     } catch (error) {
         console.error(`Error fetching rows for GID ${gid}:`, error);

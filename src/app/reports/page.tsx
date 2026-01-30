@@ -13,7 +13,14 @@ import { clsx } from 'clsx';
 const BRAND_COLORS = ['#FF4D00', '#CCFF00', '#007AFF', '#FFFFFF', '#333333'];
 
 export default function ReportsPage() {
-    const { zigData, financeData, loading, filters } = useData();
+    const {
+        zigData,
+        financeData,
+        ingresseComissarios,
+        ingresseTimeline,
+        loading,
+        filters
+    } = useData();
 
     const filteredZig = useMemo(() => {
         return zigData.filter(item => {
@@ -72,8 +79,34 @@ export default function ReportsPage() {
             };
         }).filter(d => d["Quantidade"] > 0 || d["Receita R$"] > 0);
 
-        return { efficiencyData, ticketByCat, correlationData };
-    }, [filteredZig, filteredFinance, loading]);
+        // 4. Top Comissários Cross-Event (Ingresse)
+        const comissarioTotal = ingresseComissarios.reduce((acc: any, d) => {
+            if (!acc[d.passkey]) acc[d.passkey] = { name: d.passkey, revenue: 0, tickets: 0 };
+            acc[d.passkey].revenue += d.receita;
+            acc[d.passkey].tickets += d.ingressos;
+            return acc;
+        }, {});
+
+        const topComissariosGlobal = Object.values(comissarioTotal)
+            .sort((a: any, b: any) => b.revenue - a.revenue)
+            .slice(0, 10);
+
+        // 5. Event Performance Comparison (Ingresse)
+        const eventsList = Array.from(new Set(ingresseTimeline.map(d => d.evento)));
+        const eventComparison = eventsList.map(evt => {
+            const evtData = ingresseTimeline.filter(d => d.evento === evt);
+            const revenue = evtData.reduce((acc, d) => acc + d.valor, 0);
+            const tickets = evtData.reduce((acc, d) => acc + d.quantidade, 0);
+            return {
+                name: evt,
+                revenue,
+                tickets,
+                avgTicket: tickets > 0 ? revenue / tickets : 0
+            };
+        }).sort((a, b) => b.revenue - a.revenue);
+
+        return { efficiencyData, ticketByCat, correlationData, topComissariosGlobal, eventComparison };
+    }, [filteredZig, filteredFinance, ingresseComissarios, ingresseTimeline, loading]);
 
     if (loading) return null;
     if (!analytics) return null;
@@ -200,6 +233,68 @@ export default function ReportsPage() {
                     </div>
                     <div className="hidden md:block w-48 text-white font-black italic text-xl tracking-tighter leading-none pt-4 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">
                         DADOS TRADUZIDOS EM RESULTADO REAL.
+                    </div>
+                </div>
+            </div>
+
+            {/* Global Insights Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {/* Global Comissários Ranking */}
+                <div className="urban-card p-8 bg-black border-2 border-white">
+                    <div className="flex items-center gap-3 mb-6 border-b-2 border-[#007AFF] pb-2">
+                        <Users className="w-6 h-6 text-[#007AFF]" />
+                        <h3 className="text-xl font-black italic text-white uppercase">TOP 10 COMISSÁRIOS (GLOBAL)</h3>
+                    </div>
+                    <p className="text-xs text-white/40 mb-8 font-black uppercase tracking-widest italic">Ranking consolidado de receita por comissário somando todos os eventos.</p>
+                    <div className="h-[400px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={analytics.topComissariosGlobal} layout="vertical" margin={{ left: 20, right: 80 }}>
+                                <XAxis type="number" hide />
+                                <YAxis dataKey="name" type="category" stroke="#fff" fontSize={10} fontWeight="900" width={100} axisLine={false} tickLine={false} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#000', border: '2px solid #fff' }}
+                                    itemStyle={{ color: '#fff' }}
+                                    formatter={(val: any) => `R$ ${Number(val).toLocaleString('pt-BR')}`}
+                                />
+                                <Bar dataKey="revenue" fill="#007AFF" radius={[0, 4, 4, 0]}>
+                                    <LabelList dataKey="revenue" position="right" fill="#fff" fontSize={10} fontWeight="900" formatter={(val: any) => `R$ ${Number(val).toLocaleString('pt-BR')}`} />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Event Comparison Table/Chart */}
+                <div className="urban-card p-8 bg-black border-2 border-white">
+                    <div className="flex items-center gap-3 mb-6 border-b-2 border-[#CCFF00] pb-2">
+                        <Zap className="w-6 h-6 text-[#CCFF00]" />
+                        <h3 className="text-xl font-black italic text-white uppercase">PERFORMANCE POR EVENTO</h3>
+                    </div>
+                    <div className="overflow-x-auto mt-4">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b-2 border-white/20">
+                                    <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60">Evento</th>
+                                    <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60 text-right">Receita</th>
+                                    <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60 text-right">Tickets</th>
+                                    <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60 text-right">Tkt Médio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {analytics.eventComparison.map((evt: any, i: number) => (
+                                    <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                        <td className="py-4 px-2 text-xs font-black text-white italic uppercase">{evt.name}</td>
+                                        <td className="py-4 px-2 text-xs font-mono font-bold text-[#CCFF00] text-right">
+                                            {evt.revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                        </td>
+                                        <td className="py-4 px-2 text-xs font-mono font-bold text-white text-right">{evt.tickets}</td>
+                                        <td className="py-4 px-2 text-xs font-mono font-bold text-[#007AFF] text-right">
+                                            {evt.avgTicket.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

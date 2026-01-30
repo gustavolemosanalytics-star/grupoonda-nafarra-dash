@@ -93,27 +93,37 @@ export default function ZigPage() {
                 </div>
             </div>
 
+            {/* Data Context Card */}
+            {zigData.length > 0 && (
+                <div className="bg-black border-4 border-[#CCFF00] p-4 shadow-[8px_8px_0px_#fff] flex flex-col md:flex-row gap-4 items-center">
+                    <div className="bg-[#CCFF00] text-black px-4 py-1 font-black italic uppercase text-xs">Atenção</div>
+                    <p className="text-white font-bold text-sm uppercase italic tracking-tighter">
+                        Dados de: <span className="text-[#CCFF00]">{Array.from(new Set(zigData.map(d => `${d.dataEvento} - ${d.evento} (${d.cidade}/${d.estado})`))).join(' | ')}</span>
+                    </p>
+                </div>
+            )}
+
             {/* Main KPIs */}
             <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <UrbanKPI
                     title="ITENS VENDIDOS"
                     value={stats.totalItems.toLocaleString()}
                     icon={Zap}
-                    color="#CCFF00"
+                    color="#000"
                     index={0}
                 />
                 <UrbanKPI
                     title="TICKET MÉDIO"
                     value={`R$ ${stats.averageTicket.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
                     icon={Target}
-                    color="#007AFF"
+                    color="#000"
                     index={1}
                 />
                 <UrbanKPI
                     title="RECEITA BRUTA"
                     value={`R$ ${stats.totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}
                     icon={DollarSign}
-                    color="#FFFFFF"
+                    color="#000"
                     highlight
                     index={2}
                 />
@@ -215,31 +225,30 @@ function UrbanKPI({ title, value, icon: Icon, color, highlight, index }: any) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
             className={clsx(
-                "urban-card p-8 group flex flex-col justify-between min-h-[200px]",
-                highlight && "bg-white text-black border-black border-8 shadow-[12px_12px_0px_#FF4D00]"
+                "bg-white p-8 border-4 border-black shadow-[8px_8px_0px_#000] group flex flex-col justify-between min-h-[200px] relative overflow-hidden transition-all hover:-translate-y-1 hover:shadow-[12px_12px_0px_#000]",
+                highlight && "shadow-[8px_8px_0px_#FF4D00] hover:shadow-[12px_12px_0px_#FF4D00]"
             )}
         >
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start relative z-10">
                 <div className={clsx(
-                    "w-14 h-14 bg-black flex items-center justify-center border-2 border-white transition-transform group-hover:rotate-12",
-                    highlight && "bg-[#FF4D00]"
+                    "w-14 h-14 bg-black flex items-center justify-center border-2 border-white transition-transform group-hover:rotate-12"
                 )}>
-                    <Icon className={clsx("w-8 h-8", highlight ? "text-black" : "text-white")} style={{ color: !highlight ? color : undefined }} />
+                    <Icon className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-[40px] font-black text-white/10 italic select-none">
+                <div className="text-[40px] font-black text-black/5 italic select-none">
                     0{index + 1}
                 </div>
             </div>
-            <div className="mt-6">
-                <p className={clsx("text-xs font-black italic uppercase tracking-widest mb-1", highlight ? "text-white/90" : "text-white/40")}>
+            <div className="mt-6 relative z-10">
+                <p className="text-xs font-black italic uppercase tracking-widest mb-1 text-black/60">
                     {title}
                 </p>
-                <h3 className={clsx("text-4xl font-black italic tracking-tighter truncate text-white", highlight && "drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]")}>
+                <h3 className="text-4xl font-black italic tracking-tighter truncate text-black uppercase">
                     {value}
                 </h3>
             </div>
             {highlight && (
-                <div className="absolute -right-4 top-0 w-8 h-full bg-[#CCFF00] transform skew-x-[-12deg]" />
+                <div className="absolute -right-4 top-0 w-2 h-full bg-[#FF4D00] transform skew-x-[-12deg]" />
             )}
         </motion.div>
     );

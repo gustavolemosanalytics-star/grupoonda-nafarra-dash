@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LayoutDashboard, Receipt, BarChart3, Settings, Menu, Sun, Flame } from 'lucide-react';
+import { LayoutDashboard, Receipt, BarChart3, Settings, Menu, Sun, Flame, Ticket, Brain } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -14,7 +14,8 @@ function cn(...inputs: ClassValue[]) {
 const navItems = [
     { name: 'ZIG VENDAS', href: '/zig', icon: LayoutDashboard },
     { name: 'FINANCEIRO', href: '/finance', icon: Receipt },
-    { name: 'ANÁLISES', href: '/reports', icon: BarChart3 },
+    { name: 'INGRESSE', href: '/ingresse', icon: Ticket },
+    { name: 'ANÁLISES', href: '/reports', icon: Brain },
 ];
 
 export default function Sidebar() {

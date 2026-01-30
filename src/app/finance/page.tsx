@@ -103,13 +103,23 @@ export default function FinancePage() {
                 </div>
             </div>
 
+            {/* Data Context Card */}
+            {financeData.length > 0 && (
+                <div className="bg-black border-4 border-[#FF4D00] p-4 shadow-[8px_8px_0px_#fff] flex flex-col md:flex-row gap-4 items-center">
+                    <div className="bg-[#FF4D00] text-black px-4 py-1 font-black italic uppercase text-xs">Atenção</div>
+                    <p className="text-white font-bold text-sm uppercase italic tracking-tighter">
+                        Dados de: <span className="text-[#FF4D00]">{Array.from(new Set(financeData.map(d => `${d.dataEvento} - ${d.evento} (${d.cidade}/${d.estado})`))).join(' | ')}</span>
+                    </p>
+                </div>
+            )}
+
             {/* Financial Health Indicators */}
             <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <UrbanKPI
                     title="RESULTADO REAL"
                     value={`R$ ${stats.result.toLocaleString('pt-BR')}`}
                     icon={Wallet}
-                    color={stats.result >= 0 ? "#CCFF00" : "#FF4D00"}
+                    color="#000"
                     subtitle="Lucro Líquido"
                     highlight
                     index={0}
@@ -118,6 +128,7 @@ export default function FinancePage() {
                     title="TOTAL INGRESSOS"
                     value={stats.totalTickets.toLocaleString()}
                     icon={Ticket}
+                    color="#000"
                     subtitle={`${stats.paidTickets.toLocaleString()} Pagos`}
                     index={1}
                 />
@@ -125,14 +136,15 @@ export default function FinancePage() {
                     title="CORTESIAS"
                     value={stats.courtesies.toLocaleString()}
                     icon={Gift}
+                    color="#000"
                     subtitle={`${stats.courtesyRate.toFixed(1)}% Ratio`}
-                    color="#007AFF"
                     index={2}
                 />
                 <UrbanKPI
                     title="ROI EVENTO"
                     value={`${((stats.revenue / (stats.costs || 1)) * 100).toFixed(0)}%`}
                     icon={Activity}
+                    color="#000"
                     subtitle="Revenue/Cost"
                     index={3}
                 />
@@ -303,27 +315,29 @@ export default function FinancePage() {
 function UrbanKPI({ title, value, icon: Icon, color, subtitle, highlight, index }: any) {
     return (
         <div className={clsx(
-            "urban-card p-6 flex flex-col justify-between min-h-[160px]",
-            highlight ? "bg-[#FF4D00] border-black border-4" : "bg-black border-white"
+            "bg-white p-6 border-4 border-black shadow-[8px_8px_0px_#000] flex flex-col justify-between min-h-[160px] relative transition-all hover:-translate-y-1 hover:shadow-[12px_12px_0px_#000]",
+            highlight && "shadow-[8px_8px_0px_#CCFF00] hover:shadow-[12px_12px_0px_#CCFF00]"
         )}>
             <div className="flex justify-between items-start mb-4">
                 <div className={clsx(
-                    "w-12 h-12 bg-black flex items-center justify-center border-2 border-white",
-                    highlight && "bg-white"
+                    "w-12 h-12 bg-black flex items-center justify-center border-2 border-white transition-transform"
                 )}>
-                    <Icon className="w-6 h-6" style={{ color: highlight ? '#FF4D00' : (color || '#CCFF00') }} />
+                    <Icon className="w-6 h-6 text-white" />
                 </div>
-                <div className="text-[30px] font-black text-white/5 italic select-none">
+                <div className="text-[30px] font-black text-black/5 italic select-none">
                     {index + 1}
                 </div>
             </div>
             <div>
-                <p className={clsx("text-[10px] font-black uppercase tracking-widest mb-1", highlight ? "text-white/90" : "text-white/40")}>{title}</p>
-                <h3 className={clsx("text-2xl font-black italic tracking-tighter truncate text-white", highlight && "drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]")} style={{ color: !highlight && color ? color : undefined }}>
+                <p className="text-[10px] font-black uppercase tracking-widest mb-1 text-black/60">{title}</p>
+                <h3 className="text-2xl font-black italic tracking-tighter truncate text-black uppercase">
                     {value}
                 </h3>
-                <p className={clsx("text-[10px] font-bold mt-1 uppercase", highlight ? "text-white/70" : "text-white/20")}>{subtitle}</p>
+                <p className="text-[10px] font-bold mt-1 uppercase text-black/40">{subtitle}</p>
             </div>
+            {highlight && (
+                <div className="absolute -right-2 top-0 w-1 h-full bg-[#CCFF00]" />
+            )}
         </div>
     );
 }

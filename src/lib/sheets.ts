@@ -31,6 +31,77 @@ export interface FinanceData {
 const SHEET_ID = '1U14ne7suYZCAuzDTnR0Yztx0wrkisu7njBIOFyC2NTk';
 const GID_ZIG = '0';
 const GID_FINANCE = '1192804610';
+const GID_INGRESSE_TIMELINE = '631411023';
+const GID_INGRESSE_COMISSARIOS = '1797204899';
+const GID_INGRESSE_GENERO = '1480455280';
+const GID_INGRESSE_IDADE = '2102251348';
+const GID_INGRESSE_PAGAMENTO = '391085550';
+const GID_INGRESSE_ESTADO = '249163603';
+const GID_INGRESSE_CIDADE = '1942719994';
+
+export interface IngresseTimelineData {
+    dataVenda: string;
+    quantidade: number;
+    valor: number;
+    dataEvento: string;
+    evento: string;
+    cidade: string;
+    estado: string;
+}
+
+export interface IngresseComissarioData {
+    passkey: string;
+    ingressos: number;
+    receita: number;
+}
+
+export interface IngresseGeneroData {
+    genero: string;
+    porcentagem: number;
+    dataEvento: string;
+    evento: string;
+    cidade: string;
+    estado: string;
+}
+
+export interface IngresseIdadeData {
+    faixaEtaria: string;
+    porcentagem: number;
+    dataEvento: string;
+    evento: string;
+    cidade: string;
+    estado: string;
+}
+
+export interface IngressePagamentoData {
+    tipoPagamento: string;
+    parcelas: string;
+    ingressos: number;
+    receita: number;
+    dataEvento: string;
+    evento: string;
+    cidade: string;
+    estado: string;
+}
+
+export interface IngresseEstadoData {
+    estado: string;
+    ingressos: number;
+    faturamento: number;
+    dataEvento: string;
+    evento: string;
+    cidade: string;
+    estadoOriginal: string;
+}
+
+export interface IngresseCidadeData {
+    cidade: string;
+    ingressos: number;
+    faturamento: number;
+    dataEvento: string;
+    evento: string;
+    estado: string;
+}
 
 async function getAuth() {
     let creds: any;
@@ -63,7 +134,7 @@ async function getAuth() {
     return new JWT({
         email: creds.client_email,
         key: creds.private_key,
-        scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
+        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 }
 
@@ -74,12 +145,52 @@ async function getRowsFromSheet(gid: string) {
         await doc.loadInfo();
         const sheet = doc.sheetsById[gid];
         if (!sheet) throw new Error(`Sheet with GID ${gid} not found`);
-        const rows = await sheet.getRows();
-        console.log(`Fetched ${rows.length} rows for GID ${gid}`);
-        if (rows.length > 0) {
-            console.log('Sample row keys:', Object.keys(rows[0].toObject()));
+
+        try {
+            const rows = await sheet.getRows();
+            console.log(`Fetched ${rows.length} rows for GID ${gid}`);
+            return rows.map(row => row.toObject());
+        } catch (e: any) {
+            if (e.message.includes('Duplicate header detected')) {
+                console.warn(`Duplicate headers in GID ${gid}, falling back to cell-based loading`);
+                await sheet.loadCells(); // Load all cells
+
+                const rows: any[] = [];
+                const headerRow = 0;
+                const headers: string[] = [];
+
+                // Get headers (1st row)
+                for (let col = 0; col < sheet.columnCount; col++) {
+                    const cell = sheet.getCell(headerRow, col);
+                    if (cell.value === null || cell.value === undefined) break;
+                    headers.push(String(cell.value));
+                }
+
+                // Get data
+                for (let rowIdx = 1; rowIdx < sheet.rowCount; rowIdx++) {
+                    const rowData: any = {};
+                    let hasData = false;
+                    for (let col = 0; col < headers.length; col++) {
+                        const cell = sheet.getCell(rowIdx, col);
+                        // Store the first occurrence of a header if duplicates exist
+                        // Or store both if needed? For now, first match is fine for the requested fields.
+                        const header = headers[col];
+                        if (rowData[header] === undefined) {
+                            rowData[header] = cell.value;
+                        } else {
+                            // If it's a duplicate, we might need the second one if the first is empty
+                            // but usually it's better to just keep track of all indices
+                            rowData[`${header}_${col}`] = cell.value;
+                        }
+                        if (cell.value !== null && cell.value !== undefined) hasData = true;
+                    }
+                    if (!hasData) break;
+                    rows.push(rowData);
+                }
+                return rows;
+            }
+            throw e;
         }
-        return rows.map(row => row.toObject());
     } catch (error) {
         console.error(`Error fetching rows for GID ${gid}:`, error);
         throw error;
@@ -114,6 +225,91 @@ export async function getFinanceData(): Promise<FinanceData[]> {
         categoria: String(row['Categoria'] || ''),
         tipo: row['Tipo'] as 'CUSTO' | 'RECEITA',
         qtdIngressos: parseFloat(String(row['QTD Ingressos'])) || 0,
+    }));
+}
+
+export async function getIngresseTimelineData(): Promise<IngresseTimelineData[]> {
+    const data = await getRowsFromSheet(GID_INGRESSE_TIMELINE);
+    return data.map((row) => ({
+        dataVenda: String(row['Data da Venda'] || ''),
+        quantidade: parseFloat(String(row['Quantidade de Ingressos'])) || 0,
+        valor: parseCurrency(String(row['Valor'])),
+        dataEvento: String(row['Data do Evento'] || ''),
+        evento: String(row['Evento'] || ''),
+        cidade: String(row['Cidade'] || ''),
+        estado: String(row['Estado'] || ''),
+    }));
+}
+
+export async function getIngresseComissarioData(): Promise<IngresseComissarioData[]> {
+    const data = await getRowsFromSheet(GID_INGRESSE_COMISSARIOS);
+    return data.map((row) => ({
+        passkey: String(row['Passkey'] || ''),
+        ingressos: parseFloat(String(row['Nº Total de Ingressos'])) || 0,
+        receita: parseCurrency(String(row['Receita'])),
+    }));
+}
+
+export async function getIngresseGeneroData(): Promise<IngresseGeneroData[]> {
+    const data = await getRowsFromSheet(GID_INGRESSE_GENERO);
+    return data.map((row) => ({
+        genero: String(row['genero'] || ''),
+        porcentagem: parseFloat(String(row['porcentagem']).replace('%', '').replace(',', '.')) || 0,
+        dataEvento: String(row['Data do Evento'] || ''),
+        evento: String(row['Evento'] || ''),
+        cidade: String(row['Cidade'] || ''),
+        estado: String(row['Estado'] || ''),
+    }));
+}
+
+export async function getIngresseIdadeData(): Promise<IngresseIdadeData[]> {
+    const data = await getRowsFromSheet(GID_INGRESSE_IDADE);
+    return data.map((row) => ({
+        faixaEtaria: String(row['faixa_etaria'] || ''),
+        porcentagem: parseFloat(String(row['porcentagem']).replace('%', '').replace(',', '.')) || 0,
+        dataEvento: String(row['Data do Evento'] || ''),
+        evento: String(row['Evento'] || ''),
+        cidade: String(row['Cidade'] || ''),
+        estado: String(row['Estado'] || ''),
+    }));
+}
+
+export async function getIngressePagamentoData(): Promise<IngressePagamentoData[]> {
+    const data = await getRowsFromSheet(GID_INGRESSE_PAGAMENTO);
+    return data.map((row) => ({
+        tipoPagamento: String(row['Tipo de Pagamento'] || ''),
+        parcelas: String(row['Parcelas'] || ''),
+        ingressos: parseFloat(String(row['Ingressos'])) || 0,
+        receita: parseCurrency(String(row['Receita'])),
+        dataEvento: String(row['Data do Evento'] || ''),
+        evento: String(row['Evento'] || ''),
+        cidade: String(row['Cidade'] || ''),
+        estado: String(row['Estado'] || ''),
+    }));
+}
+
+export async function getIngresseEstadoData(): Promise<IngresseEstadoData[]> {
+    const data = await getRowsFromSheet(GID_INGRESSE_ESTADO);
+    return data.map((row) => ({
+        estado: String(row['Estado'] || ''),
+        ingressos: parseFloat(String(row['Nº Ingressos'])) || 0,
+        faturamento: parseCurrency(String(row['Faturamento Ingressos'])),
+        dataEvento: String(row['Data do Evento'] || ''),
+        evento: String(row['Evento'] || ''),
+        cidade: String(row['Cidade'] || ''),
+        estadoOriginal: String(row['Estado'] || ''),
+    }));
+}
+
+export async function getIngresseCidadeData(): Promise<IngresseCidadeData[]> {
+    const data = await getRowsFromSheet(GID_INGRESSE_CIDADE);
+    return data.map((row) => ({
+        cidade: String(row['Cidade'] || 'Sem Cidade').trim() || 'Sem Cidade',
+        ingressos: parseFloat(String(row['Nº Ingressos'])) || 0,
+        faturamento: parseCurrency(String(row['Faturamento Ingressos'])),
+        dataEvento: String(row['Data do Evento'] || ''),
+        evento: String(row['Evento'] || ''),
+        estado: String(row['Estado'] || ''),
     }));
 }
 

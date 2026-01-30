@@ -11,6 +11,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Na Farra - Dashboard",
   description: "Dashboard de gestão do evento Na Farra",
+  icons: {
+    icon: "/favicon-cone.png",
+  },
 };
 
 export default function RootLayout({
@@ -19,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br">
+    <html lang="pt-br" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
         <DataProvider>
           <div className="flex relative">

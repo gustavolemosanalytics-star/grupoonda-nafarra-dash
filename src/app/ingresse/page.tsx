@@ -393,8 +393,13 @@ export default function IngressePage() {
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff10" />
                                 <XAxis dataKey="faixaEtaria" stroke="#fff" fontSize={10} axisLine={false} tickLine={false} />
                                 <YAxis stroke="#fff" fontSize={10} axisLine={false} tickLine={false} />
-                                <Tooltip contentStyle={{ backgroundColor: '#000', border: '2px solid #fff' }} labelStyle={{ color: '#fff' }} itemStyle={{ color: '#FF4D00' }} />
-                                <Bar dataKey="porcentagem" name="Média (%)" fill="#FF4D00" radius={[4, 4, 0, 0]}>
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#000', border: '2px solid #fff' }}
+                                    labelStyle={{ color: '#fff' }}
+                                    itemStyle={{ color: '#FF4D00' }}
+                                    formatter={(v: any) => `${Number(v).toFixed(1)}%`}
+                                />
+                                <Bar dataKey="porcentagem" name="Porcentagem" fill="#FF4D00" radius={[4, 4, 0, 0]}>
                                     <LabelList dataKey="porcentagem" position="top" fill="#fff" fontSize={10} fontWeight="bold" formatter={(v: any) => `${Number(v).toFixed(1)}%`} />
                                 </Bar>
                             </BarChart>

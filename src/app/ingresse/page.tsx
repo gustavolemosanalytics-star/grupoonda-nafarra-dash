@@ -8,7 +8,7 @@ import {
 } from 'recharts';
 import { Users, Ticket, DollarSign, TrendingUp, MapPin, CreditCard } from 'lucide-react';
 
-const COLORS = ['#CCFF00', '#FF4D00', '#000000', '#FFFFFF', '#333333', '#666666'];
+const COLORS = ['#CCFF00', '#FF4D00', '#9B59B6', '#FFFFFF', '#007AFF', '#E91E63'];
 
 export default function IngressePage() {
     const {

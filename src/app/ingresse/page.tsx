@@ -346,7 +346,7 @@ export default function IngressePage() {
                 <div className="urban-card p-8">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                         <h2 className="text-2xl font-black text-white italic uppercase flex items-center gap-3">
-                            <span className="w-2 h-6 bg-[#CCFF00]" /> Gênero (Média)
+                            <span className="w-2 h-6 bg-[#CCFF00]" /> Gênero
                         </h2>
                     </div>
                     <div className="h-[350px]">
@@ -370,6 +370,8 @@ export default function IngressePage() {
                                 </Pie>
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#000', border: '2px solid #fff' }}
+                                    itemStyle={{ color: '#fff' }}
+                                    labelStyle={{ color: '#fff' }}
                                     formatter={(v: any) => `${Number(v).toFixed(1)}%`}
                                 />
                                 <Legend layout="vertical" align="right" verticalAlign="middle" wrapperStyle={{ paddingLeft: '20px', fontSize: '10px', textTransform: 'uppercase', fontWeight: 'bold' }} />
@@ -382,7 +384,7 @@ export default function IngressePage() {
                 <div className="urban-card p-8">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                         <h2 className="text-2xl font-black text-white italic uppercase flex items-center gap-3">
-                            <span className="w-2 h-6 bg-[#FF4D00]" /> Faixa Etária (Média)
+                            <span className="w-2 h-6 bg-[#FF4D00]" /> Faixa Etária
                         </h2>
                     </div>
                     <div className="h-[350px]">

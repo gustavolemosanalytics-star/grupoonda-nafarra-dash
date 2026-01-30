@@ -78,12 +78,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 setIngresseEstado(data.ingresseEstado);
                 setIngresseCidade(data.ingresseCidade);
 
-                // Extract available filters from Zig data (common to both)
-                const datas = Array.from(new Set(data.zig.map((d: ZigData) => d.dataEvento))).filter(Boolean) as string[];
-                const cidades = Array.from(new Set(data.zig.map((d: ZigData) => d.cidade))).filter(Boolean) as string[];
-                const estados = Array.from(new Set(data.zig.map((d: ZigData) => d.estado))).filter(Boolean) as string[];
+                // Extract available filters from Zig data AND Ingresse data
+                const zigDatas = data.zig.map((d: ZigData) => d.dataEvento);
+                const zigCidades = data.zig.map((d: ZigData) => d.cidade);
+                const zigEstados = data.zig.map((d: ZigData) => d.estado);
+
+                const ingresseDatas = data.ingresseTimeline.map((d: IngresseTimelineData) => d.dataEvento);
+                const ingresseCidades = data.ingresseTimeline.map((d: IngresseTimelineData) => d.cidade);
+                const ingresseEstados = data.ingresseTimeline.map((d: IngresseTimelineData) => d.estado);
+
+                const datas = Array.from(new Set([...zigDatas, ...ingresseDatas])).filter(Boolean) as string[];
+                const cidades = Array.from(new Set([...zigCidades, ...ingresseCidades])).filter(Boolean) as string[];
+                const estados = Array.from(new Set([...zigEstados, ...ingresseEstados])).filter(Boolean) as string[];
 
                 setAvailableFilters({ datas, cidades, estados });
+
                 setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch data', error);

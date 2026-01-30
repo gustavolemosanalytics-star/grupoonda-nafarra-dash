@@ -4,6 +4,7 @@ import "./globals.css";
 import { DataProvider } from "@/context/DataContext";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
+import BackgroundDecorations from "@/components/BackgroundDecorations";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,9 +22,10 @@ export default function RootLayout({
     <html lang="pt-br">
       <body className={inter.className} suppressHydrationWarning>
         <DataProvider>
-          <div className="flex">
+          <div className="flex relative">
+            <BackgroundDecorations />
             <Sidebar />
-            <div className="flex-1 ml-[var(--sidebar-width)]">
+            <div className="flex-1 ml-[var(--sidebar-width)] relative z-10">
               <TopBar />
               <main className="mt-[var(--header-height)] p-8">
                 {children}

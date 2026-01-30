@@ -91,14 +91,14 @@ export default function ReportsPage() {
             .sort((a: any, b: any) => b.revenue - a.revenue)
             .slice(0, 10);
 
-        // 5. Event Performance Comparison (Ingresse)
-        const eventsList = Array.from(new Set(ingresseTimeline.map(d => d.evento)));
-        const eventComparison = eventsList.map(evt => {
-            const evtData = ingresseTimeline.filter(d => d.evento === evt);
-            const revenue = evtData.reduce((acc, d) => acc + d.valor, 0);
-            const tickets = evtData.reduce((acc, d) => acc + d.quantidade, 0);
+        // 5. City Performance Comparison (Ingresse)
+        const cityList = Array.from(new Set(ingresseTimeline.map(d => d.cidade)));
+        const eventComparison = cityList.map(city => {
+            const cityData = ingresseTimeline.filter(d => d.cidade === city);
+            const revenue = cityData.reduce((acc, d) => acc + d.valor, 0);
+            const tickets = cityData.reduce((acc, d) => acc + d.quantidade, 0);
             return {
-                name: evt,
+                name: city,
                 revenue,
                 tickets,
                 avgTicket: tickets > 0 ? revenue / tickets : 0
@@ -268,13 +268,13 @@ export default function ReportsPage() {
                 <div className="urban-card p-8 bg-black border-2 border-white">
                     <div className="flex items-center gap-3 mb-6 border-b-2 border-[#CCFF00] pb-2">
                         <Zap className="w-6 h-6 text-[#CCFF00]" />
-                        <h3 className="text-xl font-black italic text-white uppercase">PERFORMANCE POR EVENTO</h3>
+                        <h3 className="text-xl font-black italic text-white uppercase">PERFORMANCE POR CIDADE</h3>
                     </div>
                     <div className="overflow-x-auto mt-4">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b-2 border-white/20">
-                                    <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60">Evento</th>
+                                    <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60">Cidade</th>
                                     <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60 text-right">Receita</th>
                                     <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60 text-right">Tickets</th>
                                     <th className="py-3 px-2 text-[10px] font-black uppercase text-white/60 text-right">Tkt Médio</th>

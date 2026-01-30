@@ -315,7 +315,36 @@ export async function getIngresseCidadeData(): Promise<IngresseCidadeData[]> {
 
 function parseCurrency(val: string): number {
     if (!val) return 0;
-    // Handle currency strings like "R$ 1.234,56" or pure numbers
-    const clean = val.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
+    // Handle currency strings like "R$ 1.234,56", " 136.590 ", " 44735.25 "
+    let clean = val.replace('R$', '').trim();
+
+    // If it has both dot and comma, assume Br format: 1.234,56
+    if (clean.includes('.') && clean.includes(',')) {
+        return parseFloat(clean.replace(/\./g, '').replace(',', '.')) || 0;
+    }
+
+    // If it has only a comma, it's likely the decimal separator: 1234,56
+    if (clean.includes(',')) {
+        return parseFloat(clean.replace(',', '.')) || 0;
+    }
+
+    // If it has only a dot:
+    if (clean.includes('.')) {
+        const parts = clean.split('.');
+        // If the last part has exactly 3 digits and there is more than one part, 
+        // it's likely a thousands separator (Br format) like "136.590"
+        // But what if it's "44735.25"? 
+        // We check if any segment before the dot has at least 1 digit.
+        // Usually, in these sheets, if it's a decimal dot, it's like 44735.25 (2 decimals)
+        // or 123.4 (1 decimal). If it's a thousands dot, it's 136.590 (3 digits after dot).
+        const lastPart = parts[parts.length - 1];
+        if (parts.length > 1 && lastPart.length === 3) {
+            // Check if it's a round number used as thousands
+            return parseFloat(clean.replace(/\./g, '')) || 0;
+        }
+        // Otherwise assume it's a decimal dot (US format)
+        return parseFloat(clean) || 0;
+    }
+
     return parseFloat(clean) || 0;
 }
